@@ -42,14 +42,14 @@ function App() {
     setMessages(prev => [...prev, { role: 'user', content: text }])
     setIsLoading(true)
 
-    try {
-      const res = await axios.post(API_URL, { question: text })
-      setMessages(prev => [...prev, { role: 'assistant', content: res.data.answer }])
-    } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Hata oluştu.' }])
-    } finally {
-      setIsLoading(false)
-    }
+   try {
+  const res = await axios.post(API_URL, { question: text })
+  setMessages(prev => [...prev, { role: 'assistant', content: res.data.answer }])
+} catch {  // <--- (err) İFADESİNİ SİLDİK
+  setMessages(prev => [...prev, { role: 'assistant', content: 'Hata oluştu.' }])
+} finally {
+  setIsLoading(false)
+}
   }
 
   return (
