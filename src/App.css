@@ -23,6 +23,10 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  height: 100vh;
+  /* Animasyon ekledik */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000; /* En üstte durması için */
 }
 
 .sidebar-content {
@@ -554,54 +558,52 @@ body {
 
 /* ==================== RESPONSIVE ==================== */
 
-/* Mobil: sidebar overlay, default chat full genişlik */
+
 @media (max-width: 900px) {
   .mobile-header {
     display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 900;
   }
 
   .sidebar {
-    position: fixed;
+    position: fixed; /* Mobilde sayfadan bağımsız olsun */
     top: 0;
     left: 0;
     height: 100vh;
-    width: 80%;
+    width: 80%; /* Genişlik ayarı */
     max-width: 320px;
-    z-index: 100;
+    
+    /* VARSAYILAN OLARAK EKRAN DIŞINA İTİYORUZ */
+    transform: translateX(-100%);
+    box-shadow: none;
   }
 
+  /* React'ten 'open' class'ı geldiğinde içeri kaydır */
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+
+  /* Sidebar açılınca main content'in ezilmesini engeller */
   .main-content {
     width: 100%;
   }
 
-  .chat-header {
-    display: none;
-  }
-
-  .message {
-    max-width: 90%;
-  }
-
-  .bottom-questions {
-    display: none;
-  }
-
-  .quick-btns button {
-    font-size: 0.75rem;
-    padding: 5px 10px;
-  }
+  /* Mobilde header'ı sidebar'ın altında bırakmak isterseniz display: none yapabilirsiniz */
+  /* Ama overlay olduğu için gerek yok */
 }
 
-/* Desktop: sidebar her zaman görünür */
 @media (min-width: 901px) {
   .mobile-header {
     display: none;
   }
 
+  /* Desktopta her zaman görünür ve akışta yer alır */
   .sidebar {
     position: static;
-    height: auto;
-    display: flex;
+    transform: none !important; /* Mobildeki transformu iptal et */
   }
 }
 
