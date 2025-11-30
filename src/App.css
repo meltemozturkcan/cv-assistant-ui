@@ -49,6 +49,7 @@ body {
   transition: all 0.3s ease;
   cursor: pointer;
 }
+
 .avatar-img:hover {
   transform: scale(1.05);
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
@@ -66,7 +67,7 @@ body {
 }
 
 .info-badges {
-   display: flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
@@ -74,7 +75,6 @@ body {
 }
 
 .badge {
-  background: rgba(102, 126, 234, 0.2);
   background: rgba(102, 126, 234, 0.2);
   padding: 5px 12px;
   border-radius: 20px;
@@ -120,11 +120,13 @@ body {
   color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s;
 }
+
 .skill-tag:hover {
   background: rgba(102, 126, 234, 0.15);
   border-color: #667eea;
   transform: translateY(-2px);
 }
+
 /* Questions Section */
 .questions-section {
   margin-bottom: 25px;
@@ -169,6 +171,7 @@ body {
   text-align: center;
   font-weight: 600;
   transition: transform 0.3s;
+  margin-top: 10px;
 }
 
 .download-btn:hover {
@@ -258,7 +261,6 @@ body {
   max-width: 800px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.7);
-  
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
@@ -293,6 +295,7 @@ body {
 .message-avatar:hover {
   transform: scale(1.1);
 }
+
 .message-content {
   padding: 14px 20px;
   border-radius: 18px;
@@ -481,7 +484,7 @@ body {
   color: #999;
 }
 
-/* ==================== MOBILE ==================== */
+/* ==================== MOBILE HEADER & OVERLAY ==================== */
 .mobile-header {
   display: none;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -517,15 +520,20 @@ body {
   font-weight: 600;
 }
 
+/* Overlay: varsayılan kapalı, .open ile açılıyor */
 .overlay {
-  display: none;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 99;
+  z-index: 90;
+  display: none;
+}
+
+.overlay.open {
+  display: block;
 }
 
 /* ==================== RESPONSIVE ==================== */
@@ -545,10 +553,6 @@ body {
 
   .sidebar.open {
     left: 0;
-  }
-
-  .overlay {
-    display: block;
   }
 
   .main-content {
@@ -614,6 +618,7 @@ body {
   background: rgba(255,255,255,0.2);
   border-radius: 3px;
 }
+
 /* Expertise Section */
 .expertise-section {
   margin-bottom: 25px;
@@ -647,6 +652,7 @@ body {
   background: rgba(102, 126, 234, 0.2);
   transform: translateX(5px);
 }
+
 /* Kurumsal Markdown stilleri */
 .message-content {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -669,6 +675,3 @@ body {
 .message-content h4 {
   font-size: 0.95rem;
 }
-
-
-
