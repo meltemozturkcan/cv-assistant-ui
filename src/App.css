@@ -554,7 +554,7 @@ body {
 
 /* ==================== RESPONSIVE ==================== */
 
-/* Mobil davranış: sidebar varsayılan gizli */
+/* Mobil: sidebar overlay, default chat full genişlik */
 @media (max-width: 900px) {
   .mobile-header {
     display: flex;
@@ -563,16 +563,11 @@ body {
   .sidebar {
     position: fixed;
     top: 0;
-    left: -380px;
-    height: 100vh;
-    z-index: 100;
-    transition: left 0.3s ease;
-    display: none; /* İlk açılışta tamamen gizli */
-  }
-
-  .sidebar.sidebar-mobile-open {
-    display: flex;   /* Sadece open iken görünür */
     left: 0;
+    height: 100vh;
+    width: 80%;
+    max-width: 320px;
+    z-index: 100;
   }
 
   .main-content {
@@ -597,7 +592,7 @@ body {
   }
 }
 
-/* Desktop davranış: sidebar her zaman görünür */
+/* Desktop: sidebar her zaman görünür */
 @media (min-width: 901px) {
   .mobile-header {
     display: none;
@@ -607,27 +602,6 @@ body {
     position: static;
     height: auto;
     display: flex;
-  }
-}
-
-@media (max-width: 500px) {
-  .input-area {
-    padding: 10px 15px;
-  }
-
-  .input-area input {
-    padding: 12px 15px;
-    font-size: 0.9rem;
-  }
-
-  .input-area button {
-    width: 45px;
-    height: 45px;
-  }
-
-  .message-content {
-    padding: 10px 14px;
-    font-size: 0.9rem;
   }
 }
 
