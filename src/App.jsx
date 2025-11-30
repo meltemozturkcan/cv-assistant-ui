@@ -47,10 +47,8 @@ function App() {
   // Mobil menü durumu
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  // Ekran boyutuna göre mobil/desktop bilgisi
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
-  )
+  // Ekran genişliği bilgisi (sadece "desktop mu" bilmemiz yeterli)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   const messagesEndRef = useRef(null)
 
@@ -62,15 +60,15 @@ function App() {
     scrollToBottom()
   }, [messages])
 
-  // Ekran yeniden boyutlanınca mobil/desktop bilgisini güncelle
+  // Ekran yeniden boyutlanınca desktop/mobil bilgisini güncelle
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 768
-      setIsMobile(mobile)
+      const desktop = window.innerWidth > 900
+      setIsDesktop(desktop)
 
-      // Desktop'a geçince sidebar her zaman açık kabul edilebilir
-      if (!mobile) {
-        setIsSidebarOpen(false) // ister true da yapabilirsin; CSS zaten gösterir
+      // Desktop'a geçince sidebar'ı kapat, CSS zaten gösterir
+      if (desktop) {
+        setIsSidebarOpen(false)
       }
     }
 
@@ -146,10 +144,10 @@ function App() {
       </div>
 
       {/* Sidebar 
-          - Desktop: her zaman render
-          - Mobil: sadece isSidebarOpen true iken render
+          - Desktop: isDesktop === true → her zaman render
+          - Mobil: sadece isSidebarOpen === true iken render
       */}
-      {(!isMobile || isSidebarOpen) && (
+      {(isDesktop || isSidebarOpen) && (
         <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-content">
             {/* Profil Bölümü */}
@@ -245,9 +243,9 @@ function App() {
       )}
 
       {/* Overlay: sadece mobilde ve sidebar açıkken */}
-      {isMobile && (
+      {!isDesktop && isSidebarOpen && (
         <div
-          className={`overlay ${isSidebarOpen ? 'open' : ''}`}
+          className="overlay open"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
