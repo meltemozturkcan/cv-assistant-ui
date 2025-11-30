@@ -56,7 +56,12 @@ body {
     transform: translateX(-100%); /* Varsayılan: Gizli */
     box-shadow: none;
   }
-
+/* Mobilde "Hızlı Sorular" alanını gizle */
+@media (max-width: 900px) {
+  .bottom-questions {
+    display: none !important;
+  }
+}
   .sidebar.open {
     transform: translateX(0); /* Açık: Görünür */
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
