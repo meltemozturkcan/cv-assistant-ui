@@ -3,227 +3,134 @@ import axios from 'axios'
 import './App.css'
 import ReactMarkdown from 'react-markdown'
 
-// ... (Sabitleriniz: AVATAR_URL, API_URL, QUICK_QUESTIONS, SKILLS aynı kalsın) ...
 const AVATAR_URL = '/meltem.png'
 const API_URL = 'https://cv-assistant-duuy.onrender.com/ask'
 
+// Sabit veriler...
 const QUICK_QUESTIONS = [
-  'Teknik yetkinlikleriniz neler?',
-  'İş deneyiminizi özetleyebilir misiniz?',
-  'Yer aldığınız projelerden bahsedebilir misiniz?',
-  'Eğitim geçmişinizi paylaşabilir misiniz?'
+  'Teknik yetkinlikleriniz neler?', 'İş deneyiminizi özetleyebilir misiniz?',
+  'Projelerinizden bahseder misiniz?', 'Eğitim durumunuz nedir?'
 ]
 
-const SKILLS = [
-  'C#', '.NET Core', 'AI/ML', 'Python', 'Web API', 'Microservices',
-  'React', 'Azure', 'Docker', 'PostgreSQL', 'MSSQL', 'GitHub'
-]
+const SKILLS = ['C#', '.NET Core', 'Python', 'React', 'Azure', 'Docker', 'SQL']
 
 function App() {
-  // ... State tanımları aynı ...
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: 'Merhaba. Ben Meltem Öztürkcan’ın profesyonel özgeçmiş asistanıyım. Bilgi almak istediğiniz konuyla ilgili sorunuzu paylaşabilirsiniz.'
-    }
-  ])
+  const [messages, setMessages] = useState([{
+    role: 'assistant',
+    content: 'Merhaba. Ben Meltem Öztürkcan’ın asistanıyım. Nasıl yardımcı olabilirim?'
+  }])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Sidebar kontrolü: Başlangıçta false (kapalı)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   
-  // isMobile state'ine artık render için ihtiyacımız yok ama overlay kontrolü için tutabiliriz
-  const [isMobile, setIsMobile] = useState(false) 
-
   const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  useEffect(() => {
-    // İlk açılışta ve resize'da mobil kontrolü
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 900)
-      if (window.innerWidth > 900) {
-        setIsSidebarOpen(false) // Desktopa geçince state'i resetle
-      }
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
+  // Mesaj Gönderme
   const sendMessage = async (e, questionText = null) => {
     if (e) e.preventDefault()
-    const userMessage = questionText || input.trim()
-    if (!userMessage || isLoading) return
+    const text = questionText || input.trim()
+    if (!text || isLoading) return
 
     setInput('')
-    setIsSidebarOpen(false) // Mesaj gönderince mobilde menüyü kapat
-
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }])
+    setIsSidebarOpen(false) // Mobilde mesaj atınca menüyü kapat
+    setMessages(prev => [...prev, { role: 'user', content: text }])
     setIsLoading(true)
 
     try {
-      const response = await axios.post(API_URL, { question: userMessage })
-      const cleanedAnswer = response.data.answer
-        .replace(/\n{3,}/g, '\n\n')
-        .replace(/^\s+/gm, '')
-        .trim()
-
-      setMessages(prev => [...prev, { role: 'assistant', content: cleanedAnswer }])
-    } catch (error) {
-      console.error('Hata:', error)
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.' }
-      ])
+      const res = await axios.post(API_URL, { question: text })
+      setMessages(prev => [...prev, { role: 'assistant', content: res.data.answer }])
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Hata oluştu.' }])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleQuickQuestion = question => {
-    sendMessage(null, question)
-  }
-
   return (
     <div className="app">
-      {/* Mobile Header */}
-      <div className="mobile-header">
-        <button
-          className="menu-btn"
-          onClick={() => setIsSidebarOpen(true)} // Sadece açma işlemi
-        >
-          ☰
-        </button>
-        <div className="mobile-title">
-          <img src={AVATAR_URL} alt="Meltem Öztürkcan" className="mobile-avatar" />
-          <span>Meltem Öztürkcan</span>
-        </div>
-      </div>
-
+      
       {/* 
-         SIDEBAR DÜZELTME:
-         Koşullu render'ı kaldırdık. className ile kontrol ediyoruz.
-         Desktopta 'sidebar', Mobilde açıkken 'sidebar open' oluyor.
+          SIDEBAR
+          isMobile kontrolü YOK. Her zaman render edilir.
+          Mobilde görünürlüğünü CSS'teki transform ve 'open' class'ı yönetir.
       */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-content">
           <div className="profile-section">
-            <img src={AVATAR_URL} alt="Meltem Öztürkcan" className="avatar-img" />
+            <img src={AVATAR_URL} className="avatar-img" alt="Profile" />
             <h2>Meltem Öztürkcan</h2>
-            <p className="title">Full Stack .NET &amp; AI Developer</p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '15px' }}>
-              <span className="badge">İstanbul, Türkiye</span>
-              <span className="badge">2+ Yıl Deneyim</span>
-            </div>
-            <p className="bio">
-              Mikroservis mimarileri ve AI destekli sistemlerde uzman, modern teknolojilerle ölçeklenebilir çözümler üreten full-stack geliştirici.
-            </p>
-          </div>
-
-          <div className="skills-section">
-            <h3>Teknik Yetenekler</h3>
-            <div className="skills-grid">
-              {SKILLS.map((skill, index) => (
-                <span key={index} className="skill-tag">{skill}</span>
-              ))}
+            <p>.NET Developer</p>
+            <div style={{display:'flex', justifyContent:'center', marginTop:'10px'}}>
+               <span className="badge">İstanbul</span>
             </div>
           </div>
-
-          <div className="expertise-section">
-            <h3>Uzmanlık Alanları</h3>
-            <div className="expertise-list">
-              <div className="expertise-item">Full Stack .NET Development</div>
-              <div className="expertise-item">AI/ML Integration</div>
-              <div className="expertise-item">DevOps &amp; Cloud</div>
-              <div className="expertise-item">Frontend &amp; UI/UX</div>
+          
+          {/* İçerik örnekleri */}
+          <div style={{marginTop: '20px'}}>
+            <h3 style={{fontSize:'0.9rem', color:'#aaa', marginBottom:'10px'}}>Yetenekler</h3>
+            <div style={{display:'flex', flexWrap:'wrap', gap:'5px'}}>
+              {SKILLS.map(s => <span key={s} className="badge">{s}</span>)}
             </div>
           </div>
-
-          <a href="/cv.pdf" download className="download-btn">📄 Özgeçmişi İncele</a>
-        </div>
-
-        <div className="sidebar-footer">
-           {/* ... Footer içeriği aynı ... */}
-           <div className="social-links">
-              {/* Linklerinizi buraya koyun */}
-              <a href="https://linkedin.com" target="_blank">LI</a>
-              <a href="https://github.com" target="_blank">GH</a>
-           </div>
-           <p className="copyright">© 2025 Meltem Öztürkcan</p>
+          
+          <div style={{marginTop:'auto', paddingTop:'20px'}}>
+             <p style={{fontSize:'0.7rem', opacity:0.6}}>© 2025 Meltem Öztürkcan</p>
+          </div>
         </div>
       </aside>
 
-      {/* Overlay: Sadece mobilde ve menü açıkken görünür */}
+      {/* 
+          OVERLAY 
+          Sidebar açıkken arka planı karartır ve tıklayınca kapatır 
+      */}
       <div 
-        className={`overlay ${isSidebarOpen ? 'active' : ''}`}
+        className={`overlay ${isSidebarOpen ? 'active' : ''}`} 
         onClick={() => setIsSidebarOpen(false)}
-        style={{
-           display: (isMobile && isSidebarOpen) ? 'block' : 'none'
-        }}
-      />
+      ></div>
 
+      {/* MAIN CONTENT */}
       <main className="main-content">
-        {/* ... Main content içeriği tamamen aynı ... */}
-        <header className="chat-header">
-          <div className="header-info">
-            <h1>Meltem AI - Özgeçmiş Asistanı</h1>
-            <p>Meltem’in kariyeri hakkında sorularınızı yanıtlamaya hazırım.</p>
-          </div>
-        </header>
+        
+        {/* Mobile Header: Sadece mobilde görünür (CSS ile) */}
+        <div className="mobile-header">
+          <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>☰</button>
+          <span>Meltem AI</span>
+          <img src={AVATAR_URL} style={{width:'30px', borderRadius:'50%'}} alt="mobile-logo"/>
+        </div>
 
+        {/* Chat Alanı */}
         <div className="chat-container">
           <div className="messages">
-            {messages.map((message, index) => (
-              <div key={index} className={`message ${message.role}`}>
-                {message.role === 'assistant' && (
-                  <img src={AVATAR_URL} alt="Bot" className="message-avatar" />
-                )}
+            {messages.map((m, i) => (
+              <div key={i} className={`message ${m.role}`}>
                 <div className="message-content">
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
+                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               </div>
             ))}
-            {isLoading && (
-              <div className="message assistant">
-                <img src={AVATAR_URL} alt="Bot" className="message-avatar" />
-                <div className="message-content loading">...</div>
-              </div>
-            )}
+            {isLoading && <div className="message assistant"><div className="message-content">...</div></div>}
             <div ref={messagesEndRef} />
           </div>
         </div>
 
-        <div className="bottom-questions">
-            {/* Quick questions kodunuz aynı */}
-             <div className="quick-btns">
-            {QUICK_QUESTIONS.map((q, i) => (
-              <button key={i} onClick={() => handleQuickQuestion(q)} disabled={isLoading}>
-                {q}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <footer className="input-area">
+        {/* Alt Input */}
+        <div className="input-area">
           <form onSubmit={sendMessage}>
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Sorunuzu yazın..."
+            <input 
+              value={input} 
+              onChange={e => setInput(e.target.value)} 
+              placeholder="Mesaj yazın..." 
               disabled={isLoading}
             />
-            <button type="submit" disabled={isLoading || !input.trim()}>Go</button>
+            <button type="submit">Send</button>
           </form>
-        </footer>
+        </div>
       </main>
     </div>
   )
